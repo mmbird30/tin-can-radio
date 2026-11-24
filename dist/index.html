@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f5ea">
+  <meta name="referrer" content="no-referrer">
+  <title>隔空传声筒 · 纸杯电台</title>
+  <style>
+    :root { color-scheme:light; --paper:#f7f5ea; --ink:#1b332c; --soft:#52675a; --orange:#ff773e; --lime:#dce9ac; }
+    * { box-sizing:border-box; }
+    [hidden] { display:none !important; }
+    body { margin:0; background-color:var(--paper); color:var(--ink); font-family:"DM Sans","PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+    button, input { font:inherit; }
+    button, a { -webkit-tap-highlight-color:transparent; }
+    button { cursor:pointer; }
+    :focus-visible { outline:3px solid #08765b; outline-offset:5px; }
+    a { color:inherit; text-underline-offset:4px; }
+    .shell { max-width:1112px; padding:0 46px; margin:auto; }
+    header { height:91px; border-bottom:1px solid #bdc3ad; display:flex; justify-content:space-between; align-items:center; }
+    .brand,.micro,.help-title { display:flex; align-items:center; gap:10px; }
+    .brand { font-weight:800; letter-spacing:.09em; }
+    .mark { display:inline-flex; align-items:center; justify-content:center; gap:2px; width:34px; height:34px; border-radius:50%; background:var(--ink); transform:rotate(-12deg); }
+    .mark i { width:3px; height:10px; background:var(--lime); border-radius:2px; }
+    .mark i:nth-child(2),.mark i:nth-child(4) { height:16px; }
+    .mark i:nth-child(3) { height:23px; }
+    .mono { font-family:"Space Mono",Consolas,"Courier New",monospace; }
+    .top-label { color:#516555; font-size:.77rem; letter-spacing:.1em; }
+    main { display:grid; grid-template-columns:minmax(0,1fr) minmax(338px,431px); gap:clamp(30px,6vw,91px); align-items:center; padding:clamp(48px,8vh,94px) 0 48px; }
+    h1 { font-size:clamp(64px,7.1vw,96px); font-weight:900; letter-spacing:-.065em; line-height:1.08; margin:0 0 23px; }
+    h1 .line { display:block; }
+    .dot { display:inline-block; width:.16em; height:.16em; border-radius:50%; background:#d85224; margin-left:.095em; }
+    .intro { max-width:29em; color:#465c51; line-height:1.85; margin:0 0 27px; font-size:1.01rem; }
+    .copy { background:var(--ink); border:1px solid var(--ink); border-radius:8px; padding:13px 19px; color:#fffcef; font-weight:720; display:inline-flex; align-items:center; gap:12px; }
+    .copy:hover { background:#294a3d; }
+    .copy:active { transform:translateY(1px); }
+    .linkicon { display:inline-block; width:22px; height:17px; position:relative; transform:rotate(-35deg); }
+    .linkicon::before,.linkicon::after { content:""; position:absolute; top:4px; width:11px; height:8px; box-sizing:border-box; border:1.9px solid currentColor; border-radius:7px; }
+    .linkicon::before { left:1px; } .linkicon::after { right:1px; }
+    .note { min-height:1.5em; font-size:.84rem; color:#426052; line-height:1.5; margin:9px 0 0; }
+    .manual { width:100%; max-width:360px; margin-top:7px; border:1px solid #829383; border-radius:4px; padding:8px; color:var(--ink); background:#fffdf4; }
+    .device { position:relative; padding:30px 31px 25px; border-radius:30px; border:2px solid #203e31; background:linear-gradient(148deg,#345444 0%,#284536 51%,#1f3a2e 100%); box-shadow:inset 0 2px 1px #76907b,inset 0 -5px 0 #1a3428,3px 7px 0 #aec0a2,8px 19px 29px -12px #31432e65; color:#eef0dc; }
+    .screw { width:8px; height:8px; background:linear-gradient(135deg,#a6ae91 38%,#465b4c 39% 58%,#8e9d85 59%); border:1px solid #253e32; border-radius:50%; position:absolute; box-shadow:0 1px 1px #a1b49a50; }
+    .s1,.s2 { top:13px; } .s3,.s4 { bottom:15px; } .s1,.s3 { left:12px; } .s2,.s4 { right:12px; }
+    .device-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+    .device-name { font-weight:800; font-size:1rem; letter-spacing:.13em; color:#f0eeda; }
+    .mic-led { display:flex; align-items:center; gap:6px; color:#e1ead7; font-size:.68rem; letter-spacing:.08em; }
+    .led { display:inline-block; width:8px; height:8px; background:#748575; box-shadow:0 0 0 1px #1b3329; border-radius:50%; }
+    .device[data-on="true"] .led { background:#ff9b69; box-shadow:0 0 8px #ff8840; }
+    .screen { border:5px solid #183127; border-radius:9px; background-color:var(--lime); background-image:linear-gradient(90deg,#59723c0e 1px,transparent 1px),linear-gradient(#59723c0e 1px,transparent 1px); background-size:5px 5px; color:#2d432b; box-shadow:inset 0 3px 7px #45513352,0 1px 0 #8a9b80; padding:13px 15px 15px; }
+    .screen-top { display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:.69rem; letter-spacing:.08em; }
+    .screen-main { display:flex; justify-content:space-between; align-items:flex-end; gap:8px; margin-top:15px; min-height:31px; }
+    #state { font-size:clamp(20px,2.15vw,27px); font-weight:780; line-height:1.2; letter-spacing:-.035em; }
+    .meter { display:flex; gap:2px; align-items:end; height:23px; }
+    .meter i { width:4px; background:#334c31; opacity:.18; }
+    .meter i.lit { opacity:.91; }
+    .hardware { margin:24px 0 22px; display:grid; grid-template-columns:1fr 132px; align-items:center; gap:21px; }
+    .grille { height:113px; border-radius:10px; background-image:radial-gradient(ellipse at center,#10291e 0 2px,#10291e 2.4px,#54705b 2.8px,transparent 3.3px); background-size:10px 10px; border-top:1px solid #1e392d; border-bottom:1px solid #58715c; }
+    .key-wrap { display:flex; justify-content:center; }
+    .talk { position:relative; width:126px; height:126px; background:linear-gradient(145deg,#ff9a61,#ff733d 55%,#f36939); border:6px solid #192f25; border-radius:50%; color:#382917; box-shadow:0 0 0 1px #607461,inset 0 3px 1px #ffc19a,inset 0 -5px 0 #bc542e,0 3px 2px #152b22; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:7px; font-weight:800; font-size:.91rem; letter-spacing:.02em; touch-action:none; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; }
+    .talk:focus-visible { outline-color:#e9f1cb; }
+    .talk.active { transform:translateY(2px); background:#ff8047; box-shadow:0 0 0 1px #829171,inset 0 2px 3px #a04b2d,0 1px 0 #14281f; }
+    .talk:disabled { cursor:default; color:#513e2e; background:#d89a74; }
+    .mic-icon { display:block; width:21px; height:24px; position:relative; border:2px solid currentColor; border-top:0; border-radius:0 0 11px 11px; transform:scale(.82); margin:3px 0 1px; }
+    .mic-icon::before { content:""; position:absolute; width:10px; height:19px; border-radius:7px; left:3.5px; top:-4px; background:currentColor; }
+    .mic-icon::after { content:""; position:absolute; height:5px; width:2px; background:currentColor; left:7.5px; bottom:-6px; box-shadow:0 3px 0 0 currentColor; }
+    .controls-foot { border-top:1px solid #6a7d685d; padding-top:13px; display:flex; justify-content:space-between; gap:10px; align-items:center; }
+    .hint { margin:0; font-size:.77rem; color:#d2decd; line-height:1.65; }
+    .stop { flex-shrink:0; border:1px solid #899a84; border-radius:5px; color:#f2f2dd; background:#294637; padding:6px 10px; font-size:.76rem; }
+    .stop:disabled { color:#acb9a5; border-color:#5a715d; cursor:default; }
+    .device-message { margin:14px 0 0; font-size:.83rem; line-height:1.65; color:#fff1ce; }
+    .under { border-top:1px solid #bdc3ad; max-width:100%; padding:19px 0; color:#486054; font-size:.85rem; }
+    details { margin:0; }
+    summary { cursor:pointer; width:fit-content; font-weight:680; color:var(--ink); }
+    details p { margin:11px 0 0; max-width:650px; line-height:1.7; }
+    .footline { margin-top:20px; font-size:.73rem; color:#647768; }
+    @media(max-width:730px) {
+      .shell { max-width:550px; padding:0 22px; }
+      header { height:61px; } main { grid-template-columns:1fr; gap:10px; padding:25px 0 28px; }
+      h1 { font-size:clamp(39px,9.1vw,59px); margin:0 0 10px; letter-spacing:-.06em; }
+      h1 .line { display:inline; } .intro { margin-bottom:13px; line-height:1.65; font-size:.93rem; }
+      .copy { padding:10px 15px; } .note:empty { min-height:2px; }
+      .device { margin-top:8px; padding:24px 23px 20px; border-radius:24px; }
+      .device-head { margin-bottom:12px; } .hardware { margin:17px 0; }
+    }
+    @media(max-width:370px) { .shell { padding:0 14px; } .hardware { grid-template-columns:1fr 114px; gap:16px; } .talk { width:110px; height:110px; } .grille { height:94px; } }
+    @media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto; transition:none !important; animation:none !important; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>纸杯电台</div>
+      <span class="top-label">对讲 <span class="mono" lang="en">/ TX·RX</span></span>
+    </header>
+    <main>
+      <section aria-labelledby="title">
+        <h1 id="title"><span class="line">隔空</span><span class="line">传声筒<span class="dot" aria-hidden="true"></span></span></h1>
+        <p class="intro">把对讲链接发给朋友。双方都点亮橙色键后，谁按住谁说话，松开就听对方。</p>
+        <button id="copy" class="copy" type="button"><span class="linkicon" aria-hidden="true"></span><span id="copy-caption">复制对讲链接</span></button>
+        <p id="notice" class="note" role="status"></p>
+        <input id="manual" class="manual mono" aria-label="手动复制对讲链接" readonly hidden>
+      </section>
+      <section class="device" id="device" aria-label="语音发射台" data-on="false">
+        <i class="screw s1" aria-hidden="true"></i><i class="screw s2" aria-hidden="true"></i><i class="screw s3" aria-hidden="true"></i><i class="screw s4" aria-hidden="true"></i>
+        <div class="device-head"><span class="device-name mono" lang="en">TIN CAN RADIO</span><span class="mic-led mono" aria-hidden="true"><i class="led"></i> MIC</span></div>
+        <div class="screen">
+          <div class="screen-top"><span>当前频道</span><b id="channel" class="mono"></b></div>
+          <div class="screen-main"><span id="state" role="status">尚未开麦</span><span id="meter" class="meter" aria-hidden="true"></span></div>
+        </div>
+        <div class="hardware">
+          <div class="grille" aria-hidden="true"></div>
+          <div class="key-wrap"><button type="button" id="talk" class="talk" aria-describedby="hint"><i class="mic-icon" aria-hidden="true"></i><span id="talk-label">开启麦克风</span></button></div>
+        </div>
+        <div class="controls-foot">
+          <p id="hint" class="hint">点橙色键，允许使用你的麦克风。</p>
+          <button type="button" id="end" class="stop" disabled>结束本轮</button>
+        </div>
+        <p id="issue" class="device-message" role="status" hidden></p>
+      </section>
+    </main>
+    <div class="under">
+      <details id="help"><summary>连接帮助</summary>
+        <p>朋友在浏览器打开对讲链接，点橙色键并允许使用麦克风，就进入同一个频道。双方都可以按住说话，对方的声音会自动播放。通话时双方都把页面留在前台。</p>
+        <p>如果聊天软件里打不开，请用 Safari、Edge 或 Chrome。一直连不上时，可以<a id="direct" rel="noreferrer">打开兼容对讲页</a>进入同一频道，用那里的麦克风按钮切换发言和静音。</p>
+      </details>
+      <div class="footline">实时语音由 <a href="https://vdo.ninja/" rel="noreferrer" target="_blank" lang="en">VDO.Ninja</a> 提供。</div>
+    </div>
+  </div>
+  <script>
+    'use strict';
+    const byId = (name) => document.getElementById(name);
+    const talk = byId('talk');
+    const end = byId('end');
+    const signalHost = 'apibackup.vdo.ninja';
+    const sdkSources = [
+      'https://cdn.jsdelivr.net/npm/@vdoninja/sdk@1.6.2/vdoninja-sdk.min.js',
+      'https://unpkg.com/@vdoninja/sdk@1.6.2/vdoninja-sdk.min.js'
+    ];
+    let sdkLoad = null;
+    let session = null;
+    let phase = 'idle';
+    let held = null;
+    let station;
+    let invited = false;
+    let copyGeneration = 0;
+    const segments = Array.from({length: 9}, (_, index) => {
+      const bar = document.createElement('i');
+      bar.style.height = (5 + index * 2) + 'px';
+      return byId('meter').appendChild(bar);
+    });
+    function randomHex(bytes) {
+      return Array.from(crypto.getRandomValues(new Uint8Array(bytes)), (n) => n.toString(16).padStart(2, '0')).join('');
+    }
+    function compatLink() {
+      const url = new URL('https://vdo.ninja/alpha/');
+      url.search = new URLSearchParams({room:station.room, password:station.password, wss2:signalHost, ln:'cn', push:'voice' + randomHex(10), miconly:'1', vd:'0', webcam:'1', mute:'1', novideo:'1', bigbutton:'1'});
+      return url.href;
+    }
+    function inviteLink() {
+      const url = new URL(location.href);
+      url.hash = new URLSearchParams({room:station.room, key:station.password});
+      return url.href;
+    }
+    // The link carries the room and key in the #hash, so they never reach the web server.
+    function readInvite() {
+      const args = new URLSearchParams(location.hash.slice(1));
+      const room = args.get('room'), password = args.get('key');
+      return /^tin[0-9a-f]{16}$/.test(room) && /^[0-9a-f]{32}$/.test(password) ? {room, password} : null;
+    }
+    function newStation(invite) {
+      station = invite || {room:'tin' + randomHex(8), password:randomHex(16)};
+      invited = Boolean(invite);
+      if (!invite && location.hash) history.replaceState(null, '', location.pathname + location.search);
+      byId('channel').textContent = 'CH ' + station.room.slice(-4).toUpperCase();
+      byId('direct').href = compatLink();
+      byId('manual').hidden = true;
+      byId('manual').value = '';
+      byId('copy-caption').textContent = '复制对讲链接';
+      copyGeneration++;
+    }
+    function setIssue(message) {
+      byId('issue').textContent = message;
+      byId('issue').hidden = !message;
+    }
+    function render() {
+      const listeners = session ? session.peers.size : 0;
+      const states = {
+        idle:['尚未开麦','开启麦克风', invited ? '点橙色键加入朋友的频道，允许使用麦克风。' : '点橙色键，允许使用你的麦克风。'],
+        connecting:['正在连接','连接中','正在准备麦克风和语音频道。'],
+        ready:listeners ? ['对方已连接','按住说话','按住通话键或空格说话，松开就听对方。'] : ['等待对方接入','等待接入','请朋友打开对讲链接，点亮橙色键。']
+      };
+      const [status, key, hint] = held ? ['正在传声','松开静音','你的声音正在传给对方。'] : states[phase];
+      byId('state').textContent = status;
+      byId('talk-label').textContent = key;
+      byId('hint').textContent = hint;
+      talk.disabled = phase === 'connecting' || (phase === 'ready' && !listeners);
+      talk.classList.toggle('active', Boolean(held));
+      byId('device').dataset.on = String(Boolean(held));
+      talk.setAttribute('aria-label', key);
+      end.disabled = phase === 'idle';
+    }
+    function loadScript(url) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        let done = false;
+        const timer = setTimeout(() => finish(false), 7500);
+        function finish(ok) {
+          if (done) return;
+          done = true;
+          clearTimeout(timer);
+          script.onload = script.onerror = null;
+          if (ok && window.VDONinjaSDK) resolve(window.VDONinjaSDK);
+          else { script.remove(); reject(new Error('sdk')); }
+        }
+        script.onload = () => finish(true);
+        script.onerror = () => finish(false);
+        script.referrerPolicy = 'no-referrer';
+        script.src = url;
+        document.head.appendChild(script);
+      });
+    }
+    function loadSdk() {
+      if (window.VDONinjaSDK) return Promise.resolve(window.VDONinjaSDK);
+      if (!sdkLoad) sdkLoad = loadScript(sdkSources[0]).catch(() => loadScript(sdkSources[1])).catch((err) => { sdkLoad = null; throw err; });
+      return sdkLoad;
+    }
+    function updateMeter(current) {
+      if (!held || session !== current || !current.analyser) return;
+      current.analyser.getByteTimeDomainData(current.samples);
+      let power = 0;
+      for (const sample of current.samples) power += ((sample - 128) / 128) ** 2;
+      const level = Math.min(9, Math.ceil(23 * Math.sqrt(power / current.samples.length)));
+      segments.forEach((bar, index) => bar.classList.toggle('lit', index < level));
+      current.frame = requestAnimationFrame(() => updateMeter(current));
+    }
+    function setUpMeter(current) {
+      try {
+        const Audio = window.AudioContext || window.webkitAudioContext;
+        if (!Audio) return;
+        current.audio = new Audio();
+        current.analyser = current.audio.createAnalyser();
+        current.analyser.fftSize = 256;
+        current.samples = new Uint8Array(current.analyser.fftSize);
+        current.source = current.audio.createMediaStreamSource(current.media);
+        current.source.connect(current.analyser);
+      } catch { current.analyser = null; }
+    }
+    function release() {
+      if (!held) return;
+      if (session) {
+        for (const track of session.media?.getAudioTracks() || []) track.enabled = false;
+        cancelAnimationFrame(session.frame);
+      }
+      held = null;
+      for (const bar of segments) bar.classList.remove('lit');
+      render();
+    }
+    function beginPress(source) {
+      if (held || phase !== 'ready' || !session?.peers.size || document.hidden) return;
+      const tracks = session.media.getAudioTracks();
+      if (!tracks.length || tracks[0].readyState === 'ended') return;
+      held = source;
+      for (const track of tracks) track.enabled = true;
+      session.audio?.resume().catch(() => {});
+      render();
+      updateMeter(session);
+    }
+    function closeSession() {
+      release();
+      const old = session;
+      session = null;
+      phase = 'idle';
+      if (old) {
+        clearTimeout(old.timeout);
+        old.media?.getTracks().forEach((track) => { track.enabled = false; track.stop(); });
+        if (old.audio) old.audio.close().catch(() => {});
+        old.speakers.forEach((speaker) => speaker.remove());
+        try { Promise.resolve(old.sdk?.disconnect()).catch(() => {}); } catch {}
+      }
+      render();
+    }
+    function fail(current, message) {
+      if (session !== current) return;
+      closeSession();
+      setIssue(message);
+      byId('help').open = true;
+    }
+    function installPeerEvents(current) {
+      const sdk = current.sdk;
+      function notePeer(event, present) {
+        if (session !== current || !event.detail?.uuid) return;
+        const uuid = event.detail.uuid;
+        if (present) current.peers.add(uuid);
+        else {
+          current.peers.delete(uuid);
+          current.speakers.get(uuid)?.remove();
+          current.speakers.delete(uuid);
+        }
+        if (!current.peers.size) release();
+        render();
+      }
+      // Every person in the room publishes their own stream; view each one we have not seen yet.
+      function viewPeer(streamID) {
+        if (session !== current || typeof streamID !== 'string' || streamID === current.stream || current.viewed.has(streamID)) return;
+        current.viewed.add(streamID);
+        sdk.view(streamID, {audio:true, video:false}).catch(() => current.viewed.delete(streamID));
+      }
+      sdk.addEventListener('listing', (event) => {
+        for (const item of event.detail?.list || [event.detail]) viewPeer(typeof item === 'string' ? item : item?.streamID);
+      });
+      sdk.addEventListener('videoaddedtoroom', (event) => viewPeer(event.detail?.streamID));
+      sdk.addEventListener('track', (event) => {
+        const {track, streams, uuid} = event.detail || {};
+        if (session !== current || track?.kind !== 'audio') return;
+        let speaker = current.speakers.get(uuid);
+        if (!speaker) {
+          speaker = document.createElement('audio');
+          speaker.autoplay = true;
+          speaker.playsInline = true;
+          current.speakers.set(uuid, speaker);
+          document.body.appendChild(speaker);
+        }
+        speaker.srcObject = streams?.[0] || new MediaStream([track]);
+        speaker.play().catch(() => {});
+      });
+      sdk.addEventListener('peerConnected', (event) => notePeer(event, true));
+      sdk.addEventListener('dataChannelOpen', (event) => notePeer(event, true));
+      sdk.addEventListener('peerDisconnected', (event) => notePeer(event, false));
+      sdk.addEventListener('disconnected', () => fail(current, '连接已断开。点橙色键重新接入当前频道。'));
+    }
+    async function start() {
+      if (session) return;
+      if (!navigator.mediaDevices?.getUserMedia) {
+        setIssue('当前浏览器没有提供麦克风入口。请在系统浏览器打开，或使用下方的兼容发话页。');
+        byId('help').open = true;
+        return;
+      }
+      const current = {peers:new Set(), viewed:new Set(), speakers:new Map(), stream:'voice' + randomHex(10), media:null, sdk:null, audio:null, frame:0, timeout:0};
+      session = current;
+      phase = 'connecting';
+      setIssue('');
+      render();
+      try {
+        const media = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true}, video:false});
+        for (const track of media.getAudioTracks()) track.enabled = false;
+        if (session !== current) { media.getTracks().forEach((track) => track.stop()); return; }
+        current.media = media;
+        const track = media.getAudioTracks()[0];
+        if (!track) throw new DOMException('No audio track', 'NotFoundError');
+        track.addEventListener('ended', () => fail(current, '麦克风已断开。接好设备后，点橙色键重试。'));
+        setUpMeter(current);
+        current.timeout = setTimeout(() => fail(current, '语音服务暂时连不上。可以重试，或使用下方的兼容发话页。'), 25000);
+        const SDK = await loadSdk();
+        if (session !== current) return;
+        current.sdk = new SDK({password:station.password, salt:'vdo.ninja', host:'wss://' + signalHost});
+        installPeerEvents(current);
+        await current.sdk.connect();
+        if (session !== current) return;
+        await current.sdk.publish(media, {room:station.room, streamID:current.stream, label:'Tin Can Radio'});
+        if (session !== current) return;
+        clearTimeout(current.timeout);
+        phase = 'ready';
+        render();
+      } catch (err) {
+        const message = err?.name === 'NotAllowedError' ? '浏览器未允许使用麦克风。可在地址栏的网站权限中开启，再点橙色键重试。'
+          : err?.name === 'NotFoundError' ? '没有找到麦克风。请连接麦克风，再点橙色键重试。'
+          : err?.name === 'NotReadableError' ? '麦克风暂时不可用。请检查设备是否被占用，再重试。'
+          : '语音服务暂时无法连接。可以重试，或使用下方的兼容发话页。';
+        fail(current, message);
+      }
+    }
+    talk.addEventListener('click', () => { if (phase === 'idle') start(); });
+    talk.addEventListener('pointerdown', (event) => {
+      if (phase !== 'ready' || event.button !== 0 || held) return;
+      event.preventDefault();
+      talk.setPointerCapture(event.pointerId);
+      beginPress('pointer-' + event.pointerId);
+    });
+    for (const type of ['pointerup','pointercancel','lostpointercapture']) {
+      talk.addEventListener(type, (event) => { if (held === 'pointer-' + event.pointerId) release(); });
+    }
+    talk.addEventListener('contextmenu', (event) => event.preventDefault());
+    document.addEventListener('keydown', (event) => {
+      if (phase !== 'ready' || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      const space = event.code === 'Space';
+      if (!space && !(event.key === 'Enter' && event.target === talk)) return;
+      if (event.target !== talk && event.target.closest?.('input,textarea,button,summary,a,[contenteditable=true]')) return;
+      event.preventDefault();
+      if (!event.repeat) beginPress('key-' + event.code);
+    });
+    document.addEventListener('keyup', (event) => { if (held === 'key-' + event.code) { event.preventDefault(); release(); } });
+    window.addEventListener('blur', release);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) release(); });
+    window.addEventListener('pagehide', closeSession);
+    end.addEventListener('click', () => {
+      closeSession();
+      newStation();
+      setIssue('');
+      byId('notice').textContent = '本轮已结束。下次请发送新的对讲链接。';
+    });
+    byId('direct').addEventListener('click', closeSession);
+    byId('copy').addEventListener('click', async () => {
+      const link = inviteLink();
+      // A file:// or localhost link only opens on this computer.
+      const hint = location.protocol === 'https:' ? '发给朋友，请他打开后点亮橙色键。' : '注意：页面要放到 HTTPS 网站上，朋友才能打开这个链接。';
+      const generation = ++copyGeneration;
+      try {
+        await navigator.clipboard.writeText(link);
+        if (generation !== copyGeneration) return;
+        byId('manual').hidden = true;
+        byId('copy-caption').textContent = '已复制对讲链接';
+        byId('notice').textContent = hint;
+      } catch {
+        if (generation !== copyGeneration) return;
+        const input = byId('manual');
+        input.value = link;
+        input.hidden = false;
+        input.focus(); input.select();
+        byId('notice').textContent = '请手动复制下方链接发给朋友。' + (location.protocol === 'https:' ? '' : hint);
+      }
+    });
+    newStation(readInvite());
+    render();
+  </script>
+</body>
+</html>
